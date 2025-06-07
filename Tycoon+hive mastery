@@ -1,0 +1,597 @@
+-- 基本服務與玩家
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+
+-- 一執行就先改名
+local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local head = char:WaitForChild("Head", 5)
+if head then
+    local nametag = head:FindFirstChild("Nametag")
+    if nametag and nametag:FindFirstChild("TextLabel") then
+        nametag.TextLabel.Text = text ~= "" and text or "catlyn"
+    end
+end
+
+-- GUI 主體
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "MaolingHub"
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 450, 0, 350)
+Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.Active = true
+Frame.Draggable = true
+
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 10)
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, -70, 0, 40)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.2"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+local Close = Instance.new("TextButton", Frame)
+Close.Size = UDim2.new(0, 30, 0, 30)
+Close.Position = UDim2.new(1, -35, 0, 5)
+Close.Text = "X"
+Close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+Close.TextColor3 = Color3.fromRGB(255, 255, 255)
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 16
+Close.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+
+Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 6)
+
+local Minimize = Instance.new("TextButton", Frame)
+Minimize.Size = UDim2.new(0, 30, 0, 30)
+Minimize.Position = UDim2.new(1, -70, 0, 5)
+Minimize.Text = "-"
+Minimize.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+Minimize.TextColor3 = Color3.fromRGB(255, 255, 255)
+Minimize.Font = Enum.Font.GothamBold
+Minimize.TextSize = 16
+
+Instance.new("UICorner", Minimize).CornerRadius = UDim.new(0, 6)
+
+local SideBar = Instance.new("Frame", Frame)
+SideBar.Size = UDim2.new(0, 100, 1, -40)
+SideBar.Position = UDim2.new(0, 0, 0, 40)
+SideBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+Instance.new("UICorner", SideBar).CornerRadius = UDim.new(0, 6)
+
+local Content = Instance.new("Frame", Frame)
+Content.Size = UDim2.new(1, -100, 1, -40)
+Content.Position = UDim2.new(0, 100, 0, 40)
+Content.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+
+Instance.new("UICorner", Content).CornerRadius = UDim.new(0, 6)
+
+-- 縮小功能
+local isMinimized = false
+local fullSize = UDim2.new(0, 450, 0, 350)
+local miniSize = UDim2.new(0, 450, 0, 40)
+Minimize.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    SideBar.Visible = not isMinimized
+    Content.Visible = not isMinimized
+    Frame.Size = isMinimized and miniSize or fullSize
+end)
+
+-- 分區按鈕 - 大亨和蜂蜜兩個分區
+local TycoonBtn = Instance.new("TextButton", SideBar)
+TycoonBtn.Size = UDim2.new(1, -4, 0, 40)
+TycoonBtn.Position = UDim2.new(0, 2, 0, 2)
+TycoonBtn.Text = "大亨"
+TycoonBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+TycoonBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+TycoonBtn.Font = Enum.Font.Gotham
+TycoonBtn.TextSize = 14
+
+Instance.new("UICorner", TycoonBtn).CornerRadius = UDim.new(0, 6)
+
+local HoneyBtn = Instance.new("TextButton", SideBar)
+HoneyBtn.Size = UDim2.new(1, -4, 0, 40)
+HoneyBtn.Position = UDim2.new(0, 2, 0, 44)
+HoneyBtn.Text = "蜂蜜"
+HoneyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+HoneyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+HoneyBtn.Font = Enum.Font.Gotham
+HoneyBtn.TextSize = 14
+
+Instance.new("UICorner", HoneyBtn).CornerRadius = UDim.new(0, 6)
+
+-- 大亨分區
+local TycoonScroll = Instance.new("ScrollingFrame", Content)
+TycoonScroll.Size = UDim2.new(1, 0, 1, 0)
+TycoonScroll.CanvasSize = UDim2.new(0, 0, 0, 250)
+TycoonScroll.ScrollBarThickness = 6
+TycoonScroll.BackgroundTransparency = 1
+TycoonScroll.Visible = true
+TycoonScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+TycoonScroll.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
+TycoonScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+
+-- 大亨按鈕1: 固定移動到大亨後方
+local tycoonMoveBtn = Instance.new("TextButton", TycoonScroll)
+tycoonMoveBtn.Size = UDim2.new(0, 160, 0, 30)
+tycoonMoveBtn.Position = UDim2.new(0.5, -80, 0, 10)
+tycoonMoveBtn.Text = "移動到大亨後方: 關"
+tycoonMoveBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+tycoonMoveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+tycoonMoveBtn.Font = Enum.Font.Gotham
+tycoonMoveBtn.TextSize = 12
+
+Instance.new("UICorner", tycoonMoveBtn).CornerRadius = UDim.new(0, 6)
+
+-- 大亨按鈕2: 自動攻擊最近的人
+local tycoonAttackBtn = Instance.new("TextButton", TycoonScroll)
+tycoonAttackBtn.Size = UDim2.new(0, 160, 0, 30)
+tycoonAttackBtn.Position = UDim2.new(0.5, -80, 0, 50)
+tycoonAttackBtn.Text = "自動攻擊: 關"
+tycoonAttackBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+tycoonAttackBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+tycoonAttackBtn.Font = Enum.Font.Gotham
+tycoonAttackBtn.TextSize = 12
+
+Instance.new("UICorner", tycoonAttackBtn).CornerRadius = UDim.new(0, 6)
+
+-- 大亨按鈕3: 幫助他人 (輸入框 + 按鈕)
+local helpLabel = Instance.new("TextLabel", TycoonScroll)
+helpLabel.Size = UDim2.new(0, 160, 0, 20)
+helpLabel.Position = UDim2.new(0.5, -80, 0, 90)
+helpLabel.Text = "幫助他人用戶名:"
+helpLabel.BackgroundTransparency = 1
+helpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+helpLabel.Font = Enum.Font.Gotham
+helpLabel.TextSize = 12
+helpLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local helpInput = Instance.new("TextBox", TycoonScroll)
+helpInput.Size = UDim2.new(0, 160, 0, 25)
+helpInput.Position = UDim2.new(0.5, -80, 0, 110)
+helpInput.PlaceholderText = "輸入用戶名"
+helpInput.Text = ""
+helpInput.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+helpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+helpInput.Font = Enum.Font.Gotham
+helpInput.TextSize = 12
+
+Instance.new("UICorner", helpInput).CornerRadius = UDim.new(0, 4)
+
+local helpBtn = Instance.new("TextButton", TycoonScroll)
+helpBtn.Size = UDim2.new(0, 160, 0, 30)
+helpBtn.Position = UDim2.new(0.5, -80, 0, 140)
+helpBtn.Text = "開始幫助: 關"
+helpBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+helpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+helpBtn.Font = Enum.Font.Gotham
+helpBtn.TextSize = 12
+
+Instance.new("UICorner", helpBtn).CornerRadius = UDim.new(0, 6)
+
+-- 大亨按鈕4: 點擊選項
+local clickModeBtn = Instance.new("TextButton", TycoonScroll)
+clickModeBtn.Size = UDim2.new(0, 160, 0, 30)
+clickModeBtn.Position = UDim2.new(0.5, -80, 0, 180)
+clickModeBtn.Text = "點擊模式: 關"
+clickModeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+clickModeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+clickModeBtn.Font = Enum.Font.Gotham
+clickModeBtn.TextSize = 12
+
+Instance.new("UICorner", clickModeBtn).CornerRadius = UDim.new(0, 6)
+
+-- 蜂蜜分區
+local HoneyScroll = Instance.new("ScrollingFrame", Content)
+HoneyScroll.Size = UDim2.new(1, 0, 1, 0)
+HoneyScroll.CanvasSize = UDim2.new(0, 0, 0, 200)
+HoneyScroll.ScrollBarThickness = 6
+HoneyScroll.BackgroundTransparency = 1
+HoneyScroll.Visible = false
+HoneyScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+HoneyScroll.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
+HoneyScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+
+-- 蜂蜜按鈕1: 自動攻擊 (和大亨按鈕2一樣)
+local honeyAttackBtn = Instance.new("TextButton", HoneyScroll)
+honeyAttackBtn.Size = UDim2.new(0, 160, 0, 30)
+honeyAttackBtn.Position = UDim2.new(0.5, -80, 0, 10)
+honeyAttackBtn.Text = "自動攻擊: 關"
+honeyAttackBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+honeyAttackBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+honeyAttackBtn.Font = Enum.Font.Gotham
+honeyAttackBtn.TextSize = 12
+
+Instance.new("UICorner", honeyAttackBtn).CornerRadius = UDim.new(0, 6)
+
+-- 蜂蜜按鈕2: 幫助他人
+local honeyHelpLabel = Instance.new("TextLabel", HoneyScroll)
+honeyHelpLabel.Size = UDim2.new(0, 160, 0, 20)
+honeyHelpLabel.Position = UDim2.new(0.5, -80, 0, 50)
+honeyHelpLabel.Text = "幫助他人用戶名:"
+honeyHelpLabel.BackgroundTransparency = 1
+honeyHelpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+honeyHelpLabel.Font = Enum.Font.Gotham
+honeyHelpLabel.TextSize = 12
+honeyHelpLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local honeyHelpInput = Instance.new("TextBox", HoneyScroll)
+honeyHelpInput.Size = UDim2.new(0, 160, 0, 25)
+honeyHelpInput.Position = UDim2.new(0.5, -80, 0, 70)
+honeyHelpInput.PlaceholderText = "輸入用戶名"
+honeyHelpInput.Text = ""
+honeyHelpInput.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+honeyHelpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+honeyHelpInput.Font = Enum.Font.Gotham
+honeyHelpInput.TextSize = 12
+
+Instance.new("UICorner", honeyHelpInput).CornerRadius = UDim.new(0, 4)
+
+local honeyHelpBtn = Instance.new("TextButton", HoneyScroll)
+honeyHelpBtn.Size = UDim2.new(0, 160, 0, 30)
+honeyHelpBtn.Position = UDim2.new(0.5, -80, 0, 100)
+honeyHelpBtn.Text = "開始幫助: 關"
+honeyHelpBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+honeyHelpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+honeyHelpBtn.Font = Enum.Font.Gotham
+honeyHelpBtn.TextSize = 12
+
+Instance.new("UICorner", honeyHelpBtn).CornerRadius = UDim.new(0, 6)
+
+-- 蜂蜜按鈕3: 能力攻擊組合
+local honeyComboBtn = Instance.new("TextButton", HoneyScroll)
+honeyComboBtn.Size = UDim2.new(0, 160, 0, 30)
+honeyComboBtn.Position = UDim2.new(0.5, -80, 0, 140)
+honeyComboBtn.Text = "能力攻擊: 關"
+honeyComboBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+honeyComboBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+honeyComboBtn.Font = Enum.Font.Gotham
+honeyComboBtn.TextSize = 12
+
+Instance.new("UICorner", honeyComboBtn).CornerRadius = UDim.new(0, 6)
+
+-- 分區切換功能
+TycoonBtn.MouseButton1Click:Connect(function()
+    TycoonScroll.Visible = true
+    HoneyScroll.Visible = false
+    TycoonBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    HoneyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+end)
+
+HoneyBtn.MouseButton1Click:Connect(function()
+    TycoonScroll.Visible = false
+    HoneyScroll.Visible = true
+    TycoonBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    HoneyBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+end)
+
+-- 功能變數
+local isTycoonMoveEnabled = false
+local tycoonMoveLoop = nil
+
+local isTycoonAttackEnabled = false
+local tycoonAttackLoop = nil
+
+local isHelpEnabled = false
+local helpLoop = nil
+
+local clickMode = 0 -- 0: 關, 1: 只點自己, 2: 大家都點
+local clickLoop = nil
+
+local isHoneyAttackEnabled = false
+local honeyAttackLoop = nil
+
+local isHoneyHelpEnabled = false
+local honeyHelpLoop = nil
+
+local isHoneyComboEnabled = false
+local honeyComboLoop = nil
+
+-- 輔助函數: 找最近的玩家
+local function findClosestPlayer()
+    local closestPlayer = nil
+    local closestDistance = math.huge
+    local character = LocalPlayer.Character
+    
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local root = character.HumanoidRootPart
+        
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and 
+               player.Character:FindFirstChild("Head") and 
+               player.Character:FindFirstChild("Humanoid") and 
+               player.Character.Humanoid.Health > 0 then
+                
+                local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
+                if targetRoot then
+                    local distance = (targetRoot.Position - root.Position).Magnitude
+                    if distance < closestDistance then
+                        closestDistance = distance
+                        closestPlayer = player
+                    end
+                end
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+-- 大亨功能1: 移動到大亨後方
+tycoonMoveBtn.MouseButton1Click:Connect(function()
+    isTycoonMoveEnabled = not isTycoonMoveEnabled
+    tycoonMoveBtn.Text = isTycoonMoveEnabled and "移動到大亨後方: 開" or "移動到大亨後方: 關"
+    
+    if isTycoonMoveEnabled then
+        tycoonMoveLoop = task.spawn(function()
+            while isTycoonMoveEnabled do
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    local tycoonName = "ÃTycoon" .. LocalPlayer.Name
+                    local tycoon = Workspace:FindFirstChild(tycoonName)
+                    if tycoon then
+                        local tycoonPos = tycoon.Position
+                        local newPos = tycoonPos - Vector3.new(0, 0, 30) -- 後方30單位
+                        character.HumanoidRootPart.CFrame = CFrame.new(newPos)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    elseif tycoonMoveLoop then
+        task.cancel(tycoonMoveLoop)
+        tycoonMoveLoop = nil
+    end
+end)
+
+-- 大亨功能2: 自動攻擊
+tycoonAttackBtn.MouseButton1Click:Connect(function()
+    isTycoonAttackEnabled = not isTycoonAttackEnabled
+    tycoonAttackBtn.Text = isTycoonAttackEnabled and "自動攻擊: 開" or "自動攻擊: 關"
+    
+    if isTycoonAttackEnabled then
+        tycoonAttackLoop = task.spawn(function()
+            while isTycoonAttackEnabled do
+                local closestPlayer = findClosestPlayer()
+                if closestPlayer then
+                    local args = {
+                        [1] = closestPlayer.Character.Head
+                    }
+                    game:GetService("ReplicatedStorage").GeneralHit:FireServer(unpack(args))
+                end
+                task.wait(1)
+            end
+        end)
+    elseif tycoonAttackLoop then
+        task.cancel(tycoonAttackLoop)
+        tycoonAttackLoop = nil
+    end
+end)
+
+-- 大亨功能3: 幫助他人
+helpBtn.MouseButton1Click:Connect(function()
+    isHelpEnabled = not isHelpEnabled
+    helpBtn.Text = isHelpEnabled and "開始幫助: 開" or "開始幫助: 關"
+    
+    if isHelpEnabled then
+        local targetName = helpInput.Text
+        if targetName == "" then
+            helpBtn.Text = "開始幫助: 關"
+            isHelpEnabled = false
+            return
+        end
+        
+        helpLoop = task.spawn(function()
+            while isHelpEnabled do
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    -- 傳送到 Lobby.Teleport1
+                    local teleport1 = Workspace.Lobby:FindFirstChild("Teleport1")
+                    if teleport1 then
+                        character.HumanoidRootPart.CFrame = teleport1.CFrame
+                        task.wait(0.5)
+                    end
+                    
+                    -- 傳送到目標前方5單位
+                    local targetPlayer = Players:FindFirstChild(targetName)
+                    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local targetPos = targetPlayer.Character.HumanoidRootPart.Position
+                        local newPos = targetPos + Vector3.new(0, 0, 5) -- 前方5單位
+                        character.HumanoidRootPart.CFrame = CFrame.new(newPos)
+                    end
+                    
+                    -- 檢查是否進入ragdoll狀態
+                    local humanoid = character:FindFirstChild("Humanoid")
+                    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Ragdoll then
+                        -- 重置角色
+                        character:BreakJoints()
+                        LocalPlayer.CharacterAdded:Wait()
+                        task.wait(2) -- 等待重生
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    elseif helpLoop then
+        task.cancel(helpLoop)
+        helpLoop = nil
+    end
+end)
+
+-- 大亨功能4: 點擊模式
+clickModeBtn.MouseButton1Click:Connect(function()
+    clickMode = (clickMode + 1) % 3
+    local modeText = {"關", "只點自己", "大家都點"}
+    clickModeBtn.Text = "點擊模式: " .. modeText[clickMode + 1]
+    
+    if clickLoop then
+        task.cancel(clickLoop)
+        clickLoop = nil
+    end
+    
+    if clickMode > 0 then
+        clickLoop = task.spawn(function()
+            while clickMode > 0 do
+                if clickMode == 1 then
+                    -- 只點自己
+                    local tycoonName = "ÃTycoon" .. LocalPlayer.Name
+                    local tycoon = Workspace:FindFirstChild(tycoonName)
+                    if tycoon then
+                        local clickPart = tycoon:FindFirstChild("Click")
+                        if clickPart then
+                            fireclickdetector(clickPart.ClickDetector)
+                        end
+                    end
+                elseif clickMode == 2 then
+                    -- 大家都點
+                    for _, player in pairs(Players:GetPlayers()) do
+                        local tycoonName = "ÃTycoon" .. player.Name
+                        local tycoon = Workspace:FindFirstChild(tycoonName)
+                        if tycoon then
+                            local clickPart = tycoon:FindFirstChild("Click")
+                            if clickPart then
+                                fireclickdetector(clickPart.ClickDetector)
+                            end
+                        end
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- 蜂蜜功能1: 自動攻擊 (和大亨一樣)
+honeyAttackBtn.MouseButton1Click:Connect(function()
+    isHoneyAttackEnabled = not isHoneyAttackEnabled
+    honeyAttackBtn.Text = isHoneyAttackEnabled and "自動攻擊: 開" or "自動攻擊: 關"
+    
+    if isHoneyAttackEnabled then
+        honeyAttackLoop = task.spawn(function()
+            while isHoneyAttackEnabled do
+                local closestPlayer = findClosestPlayer()
+                if closestPlayer then
+                    local args = {
+                        [1] = closestPlayer.Character.Head
+                    }
+                    game:GetService("ReplicatedStorage").GeneralHit:FireServer(unpack(args))
+                end
+                task.wait(1)
+            end
+        end)
+    elseif honeyAttackLoop then
+        task.cancel(honeyAttackLoop)
+        honeyAttackLoop = nil
+    end
+end)
+
+-- 蜂蜜功能2: 幫助他人 (和大亨一樣)
+honeyHelpBtn.MouseButton1Click:Connect(function()
+    isHoneyHelpEnabled = not isHoneyHelpEnabled
+    honeyHelpBtn.Text = isHoneyHelpEnabled and "開始幫助: 開" or "開始幫助: 關"
+    
+    if isHoneyHelpEnabled then
+        local targetName = honeyHelpInput.Text
+        if targetName == "" then
+            honeyHelpBtn.Text = "開始幫助: 關"
+            isHoneyHelpEnabled = false
+            return
+        end
+        
+        honeyHelpLoop = task.spawn(function()
+            while isHoneyHelpEnabled do
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    -- 傳送到 Lobby.Teleport1
+                    local teleport1 = Workspace.Lobby:FindFirstChild("Teleport1")
+                    if teleport1 then
+                        character.HumanoidRootPart.CFrame = teleport1.CFrame
+                        task.wait(0.5)
+                    end
+                    
+                    -- 傳送到目標前方5單位
+                    local targetPlayer = Players:FindFirstChild(targetName)
+                    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local targetPos = targetPlayer.Character.HumanoidRootPart.Position
+                        local newPos = targetPos + Vector3.new(0, 0, 5) -- 前方5單位
+                        character.HumanoidRootPart.CFrame = CFrame.new(newPos)
+                    end
+                    
+                    -- 檢查是否進入ragdoll狀態
+                    local humanoid = character:FindFirstChild("Humanoid")
+                    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Ragdoll then
+                        -- 重置角色
+                        character:BreakJoints()
+                        LocalPlayer.CharacterAdded:Wait()
+                        task.wait(2) -- 等待重生
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    elseif honeyHelpLoop then
+        task.cancel(honeyHelpLoop)
+        honeyHelpLoop = nil
+    end
+end)
+
+-- 蜂蜜功能3: 能力攻擊組合
+honeyComboBtn.MouseButton1Click:Connect(function()
+    isHoneyComboEnabled = not isHoneyComboEnabled
+    honeyComboBtn.Text = isHoneyComboEnabled and "能力攻擊: 開" or "能力攻擊: 關"
+    
+    if isHoneyComboEnabled then
+        honeyComboLoop = task.spawn(function()
+            while isHoneyComboEnabled do
+                -- 使用能力
+                game:GetService("ReplicatedStorage").GeneralAbility:FireServer()
+                
+                -- 攻擊最近的人
+                local closestPlayer = findClosestPlayer()
+                if closestPlayer then
+                    local args = {
+                        [1] = closestPlayer.Character.Head
+                    }
+                    game:GetService("ReplicatedStorage").GeneralHit:FireServer(unpack(args))
+                end
+                
+                task.wait(7) -- 隔7秒重複
+            end
+        end)
+    elseif honeyComboLoop then
+        task.cancel(honeyComboLoop)
+        honeyComboLoop = nil
+    end
+end)
+
+-- 清理函數
+local function cleanUp()
+    if tycoonMoveLoop then task.cancel(tycoonMoveLoop) end
+    if tycoonAttackLoop then task.cancel(tycoonAttackLoop) end
+    if helpLoop then task.cancel(helpLoop) end
+    if clickLoop then task.cancel(clickLoop) end
+    if honeyAttackLoop then task.cancel(honeyAttackLoop) end
+    if honeyHelpLoop then task.cancel(honeyHelpLoop) end
+    if honeyComboLoop then task.cancel(honeyComboLoop) end
+end
+
+-- 添加清理事件
+ScreenGui.AncestryChanged:Connect(function(_, newParent)
+    if not newParent then
+        cleanUp()
+    end
+end)
+
+-- 防止重複執行的檢查
+if _G.maolingTycoonHoneyLoaded then
+    warn("貓玲的大亨、蜂蜜精通腳本已經在運行中")
+    return
+end
+_G.maolingTycoonHoneyLoaded = true
