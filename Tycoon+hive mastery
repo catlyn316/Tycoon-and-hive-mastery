@@ -30,7 +30,7 @@ local Title = Instance.new("TextLabel", Frame)
 Title.Size = UDim2.new(1, -70, 0, 40)
 Title.Position = UDim2.new(0, 10, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.3"
+Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.4"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -407,12 +407,12 @@ helpBtn.MouseButton1Click:Connect(function()
                         character.HumanoidRootPart.CFrame = CFrame.new(newPos)
                     end
                     
-                    -- 等待直到進入ragdoll狀態
-                    local humanoid = character:FindFirstChild("Humanoid")
-                    if humanoid then
+                    -- 等待直到進入ragdoll狀態 (檢查workspace中的Ragdolled值)
+                    local playerWorkspaceFolder = Workspace:FindFirstChild(LocalPlayer.Name)
+                    if playerWorkspaceFolder then
                         repeat
                             task.wait(0.1)
-                        until humanoid:GetState() == Enum.HumanoidStateType.Ragdoll or not isHelpEnabled
+                        until (playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value) or not isHelpEnabled
                         
                         if isHelpEnabled then
                             -- 重置角色
@@ -495,7 +495,6 @@ honeyAttackBtn.MouseButton1Click:Connect(function()
         honeyAttackLoop = nil
     end
 end)
-
 -- 蜂蜜功能2: 幫助他人 (和大亨一樣)
 honeyHelpBtn.MouseButton1Click:Connect(function()
     isHoneyHelpEnabled = not isHoneyHelpEnabled
@@ -528,12 +527,12 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                         character.HumanoidRootPart.CFrame = CFrame.new(newPos)
                     end
                     
-                    -- 等待直到進入ragdoll狀態
-                    local humanoid = character:FindFirstChild("Humanoid")
-                    if humanoid then
+                    -- 等待直到進入ragdoll狀態 (檢查workspace中的Ragdolled值)
+                    local playerWorkspaceFolder = Workspace:FindFirstChild(LocalPlayer.Name)
+                    if playerWorkspaceFolder then
                         repeat
                             task.wait(0.1)
-                        until humanoid:GetState() == Enum.HumanoidStateType.Ragdoll or not isHoneyHelpEnabled
+                        until (playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value) or not isHoneyHelpEnabled
                         
                         if isHoneyHelpEnabled then
                             -- 重置角色
