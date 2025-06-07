@@ -569,7 +569,7 @@ honeyComboBtn.MouseButton1Click:Connect(function()
                     game:GetService("ReplicatedStorage").GeneralHit:FireServer(unpack(args))
                 end
                 
-                task.wait(7) -- 隔7秒重複
+                task.wait(7.5) -- 隔7.5秒重複
             end
         end)
     elseif honeyComboLoop then
