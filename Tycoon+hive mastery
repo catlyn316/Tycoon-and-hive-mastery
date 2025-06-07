@@ -334,7 +334,7 @@ tycoonMoveBtn.MouseButton1Click:Connect(function()
             while isTycoonMoveEnabled do
                 local character = LocalPlayer.Character
                 if character and character:FindFirstChild("HumanoidRootPart") then
-                    local tycoonName = "ÃTycoon" .. LocalPlayer.Name
+                    local tycoonName = "ÅTycoon" .. LocalPlayer.Name
                     local tycoon = Workspace:FindFirstChild(tycoonName)
                     if tycoon then
                         local tycoonPos = tycoon.Position
@@ -390,7 +390,7 @@ helpBtn.MouseButton1Click:Connect(function()
         
         helpLoop = task.spawn(function()
             while isHelpEnabled do
-                local character = LocalPlayer.Character
+                local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
                 if character and character:FindFirstChild("HumanoidRootPart") then
                     -- 傳送到 Lobby.Teleport1
                     local teleport1 = Workspace.Lobby:FindFirstChild("Teleport1")
@@ -407,16 +407,20 @@ helpBtn.MouseButton1Click:Connect(function()
                         character.HumanoidRootPart.CFrame = CFrame.new(newPos)
                     end
                     
-                    -- 檢查是否進入ragdoll狀態
+                    -- 等待直到進入ragdoll狀態
                     local humanoid = character:FindFirstChild("Humanoid")
-                    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Ragdoll then
-                        -- 重置角色
-                        character:BreakJoints()
-                        LocalPlayer.CharacterAdded:Wait()
-                        task.wait(2) -- 等待重生
+                    if humanoid then
+                        repeat
+                            task.wait(0.1)
+                        until humanoid:GetState() == Enum.HumanoidStateType.Ragdoll or not isHelpEnabled
+                        
+                        if isHelpEnabled then
+                            -- 重置角色
+                            character:BreakJoints()
+                            task.wait(4) -- 等待4秒
+                        end
                     end
                 end
-                task.wait(0.1)
             end
         end)
     elseif helpLoop then
@@ -441,7 +445,7 @@ clickModeBtn.MouseButton1Click:Connect(function()
             while clickMode > 0 do
                 if clickMode == 1 then
                     -- 只點自己
-                    local tycoonName = "ÃTycoon" .. LocalPlayer.Name
+                    local tycoonName = "ÅTycoon" .. LocalPlayer.Name
                     local tycoon = Workspace:FindFirstChild(tycoonName)
                     if tycoon then
                         local clickPart = tycoon:FindFirstChild("Click")
@@ -452,7 +456,7 @@ clickModeBtn.MouseButton1Click:Connect(function()
                 elseif clickMode == 2 then
                     -- 大家都點
                     for _, player in pairs(Players:GetPlayers()) do
-                        local tycoonName = "ÃTycoon" .. player.Name
+                        local tycoonName = "ÅTycoon" .. player.Name
                         local tycoon = Workspace:FindFirstChild(tycoonName)
                         if tycoon then
                             local clickPart = tycoon:FindFirstChild("Click")
@@ -507,7 +511,7 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
         
         honeyHelpLoop = task.spawn(function()
             while isHoneyHelpEnabled do
-                local character = LocalPlayer.Character
+                local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
                 if character and character:FindFirstChild("HumanoidRootPart") then
                     -- 傳送到 Lobby.Teleport1
                     local teleport1 = Workspace.Lobby:FindFirstChild("Teleport1")
@@ -524,16 +528,20 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                         character.HumanoidRootPart.CFrame = CFrame.new(newPos)
                     end
                     
-                    -- 檢查是否進入ragdoll狀態
+                    -- 等待直到進入ragdoll狀態
                     local humanoid = character:FindFirstChild("Humanoid")
-                    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Ragdoll then
-                        -- 重置角色
-                        character:BreakJoints()
-                        LocalPlayer.CharacterAdded:Wait()
-                        task.wait(2) -- 等待重生
+                    if humanoid then
+                        repeat
+                            task.wait(0.1)
+                        until humanoid:GetState() == Enum.HumanoidStateType.Ragdoll or not isHoneyHelpEnabled
+                        
+                        if isHoneyHelpEnabled then
+                            -- 重置角色
+                            character:BreakJoints()
+                            task.wait(4) -- 等待4秒
+                        end
                     end
                 end
-                task.wait(0.1)
             end
         end)
     elseif honeyHelpLoop then
