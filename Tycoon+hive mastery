@@ -30,7 +30,7 @@ local Title = Instance.new("TextLabel", Frame)
 Title.Size = UDim2.new(1, -70, 0, 40)
 Title.Position = UDim2.new(0, 10, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.4"
+Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.5"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -416,7 +416,7 @@ helpBtn.MouseButton1Click:Connect(function()
                         
                         if isHelpEnabled then
                             -- 重置角色
-                            character:BreakJoints()
+                            game:GetService("Players").LocalPlayer.Reset:FireServer()
                             task.wait(4) -- 等待4秒
                         end
                     end
@@ -536,7 +536,7 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                         
                         if isHoneyHelpEnabled then
                             -- 重置角色
-                            character:BreakJoints()
+                            game:GetService("Players").LocalPlayer.Reset:FireServer()
                             task.wait(4) -- 等待4秒
                         end
                     end
