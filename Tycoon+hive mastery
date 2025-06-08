@@ -30,7 +30,7 @@ local Title = Instance.new("TextLabel", Frame)
 Title.Size = UDim2.new(1, -70, 0, 40)
 Title.Position = UDim2.new(0, 10, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.5"
+Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.6"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -399,25 +399,48 @@ helpBtn.MouseButton1Click:Connect(function()
                         task.wait(0.5)
                     end
                     
-                    -- 傳送到目標前方5單位
+                    -- 持續跟隨目標玩家的面向方向
                     local targetPlayer = Players:FindFirstChild(targetName)
                     if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetPos = targetPlayer.Character.HumanoidRootPart.Position
-                        local newPos = targetPos + Vector3.new(0, 0, 5) -- 前方5單位
-                        character.HumanoidRootPart.CFrame = CFrame.new(newPos)
-                    end
-                    
-                    -- 等待直到進入ragdoll狀態 (檢查workspace中的Ragdolled值)
-                    local playerWorkspaceFolder = Workspace:FindFirstChild(LocalPlayer.Name)
-                    if playerWorkspaceFolder then
-                        repeat
-                            task.wait(0.1)
-                        until (playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value) or not isHelpEnabled
+                        local playerWorkspaceFolder = Workspace:FindFirstChild(LocalPlayer.Name)
                         
-                        if isHelpEnabled then
+                        -- 持續移動直到ragdoll狀態
+                        while isHelpEnabled and playerWorkspaceFolder and 
+                              not (playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value) do
+                            
+                            -- 確認目標玩家仍然存在
+                            if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                                local targetRoot = targetPlayer.Character.HumanoidRootPart
+                                local targetPos = targetRoot.Position
+                                local targetLookDirection = targetRoot.CFrame.LookVector
+                                
+                                -- 計算目標面向方向前方5單位的位置
+                                local newPos = targetPos + (targetLookDirection * 5)
+                                character.HumanoidRootPart.CFrame = CFrame.new(newPos)
+                            else
+                                break -- 目標玩家消失，跳出循環
+                            end
+                            
+                            task.wait(0.05) -- 每0.05秒更新一次位置
+                        end
+                        
+                        -- 檢查是否因為ragdoll狀態而退出循環
+                        if isHelpEnabled and playerWorkspaceFolder and 
+                           playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value then
+                            
+                            -- 傳送到指定坐標
+                            character.HumanoidRootPart.CFrame = CFrame.new(263, 13, 197)
+                            task.wait(0.1) -- 等待傳送完成
+                            
                             -- 重置角色
-                            game:GetService("Players").LocalPlayer.Reset:FireServer()
-                            task.wait(4) -- 等待4秒
+                            game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 0
+                            
+                            -- 等待角色重新載入（使用CharacterAdded事件）
+                            local newCharacter = LocalPlayer.CharacterAdded:Wait()
+                            -- 額外等待以確保角色完全載入
+                            repeat
+                                task.wait(0.1)
+                            until newCharacter and newCharacter:FindFirstChild("HumanoidRootPart") and newCharacter.HumanoidRootPart.Parent
                         end
                     end
                 end
@@ -497,19 +520,19 @@ honeyAttackBtn.MouseButton1Click:Connect(function()
 end)
 -- 蜂蜜功能2: 幫助他人 (和大亨一樣)
 honeyHelpBtn.MouseButton1Click:Connect(function()
-    isHoneyHelpEnabled = not isHoneyHelpEnabled
-    honeyHelpBtn.Text = isHoneyHelpEnabled and "開始幫助: 開" or "開始幫助: 關"
+    isHelpEnabled = not isHelpEnabled
+    helpBtn.Text = isHelpEnabled and "開始幫助: 開" or "開始幫助: 關"
     
-    if isHoneyHelpEnabled then
-        local targetName = honeyHelpInput.Text
+    if isHelpEnabled then
+        local targetName = helpInput.Text
         if targetName == "" then
-            honeyHelpBtn.Text = "開始幫助: 關"
-            isHoneyHelpEnabled = false
+            helpBtn.Text = "開始幫助: 關"
+            isHelpEnabled = false
             return
         end
         
-        honeyHelpLoop = task.spawn(function()
-            while isHoneyHelpEnabled do
+        helpLoop = task.spawn(function()
+            while isHelpEnabled do
                 local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
                 if character and character:FindFirstChild("HumanoidRootPart") then
                     -- 傳送到 Lobby.Teleport1
@@ -519,33 +542,56 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                         task.wait(0.5)
                     end
                     
-                    -- 傳送到目標前方5單位
+                    -- 持續跟隨目標玩家的面向方向
                     local targetPlayer = Players:FindFirstChild(targetName)
                     if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetPos = targetPlayer.Character.HumanoidRootPart.Position
-                        local newPos = targetPos + Vector3.new(0, 0, 5) -- 前方5單位
-                        character.HumanoidRootPart.CFrame = CFrame.new(newPos)
-                    end
-                    
-                    -- 等待直到進入ragdoll狀態 (檢查workspace中的Ragdolled值)
-                    local playerWorkspaceFolder = Workspace:FindFirstChild(LocalPlayer.Name)
-                    if playerWorkspaceFolder then
-                        repeat
-                            task.wait(0.1)
-                        until (playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value) or not isHoneyHelpEnabled
+                        local playerWorkspaceFolder = Workspace:FindFirstChild(LocalPlayer.Name)
                         
-                        if isHoneyHelpEnabled then
+                        -- 持續移動直到ragdoll狀態
+                        while isHelpEnabled and playerWorkspaceFolder and 
+                              not (playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value) do
+                            
+                            -- 確認目標玩家仍然存在
+                            if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                                local targetRoot = targetPlayer.Character.HumanoidRootPart
+                                local targetPos = targetRoot.Position
+                                local targetLookDirection = targetRoot.CFrame.LookVector
+                                
+                                -- 計算目標面向方向前方5單位的位置
+                                local newPos = targetPos + (targetLookDirection * 5)
+                                character.HumanoidRootPart.CFrame = CFrame.new(newPos)
+                            else
+                                break -- 目標玩家消失，跳出循環
+                            end
+                            
+                            task.wait(0.1) -- 每0.1秒更新一次位置
+                        end
+                        
+                        -- 檢查是否因為ragdoll狀態而退出循環
+                        if isHelpEnabled and playerWorkspaceFolder and 
+                           playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value then
+                            
+                            -- 傳送到指定坐標
+                            character.HumanoidRootPart.CFrame = CFrame.new(263, 13, 197)
+                            task.wait(0.5) -- 等待傳送完成
+                            
                             -- 重置角色
-                            game:GetService("Players").LocalPlayer.Reset:FireServer()
-                            task.wait(4) -- 等待4秒
+                            game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 0
+                            
+                            -- 等待角色重新載入（使用CharacterAdded事件）
+                            local newCharacter = LocalPlayer.CharacterAdded:Wait()
+                            -- 額外等待以確保角色完全載入
+                            repeat
+                                task.wait(0.1)
+                            until newCharacter and newCharacter:FindFirstChild("HumanoidRootPart") and newCharacter.HumanoidRootPart.Parent
                         end
                     end
                 end
             end
         end)
-    elseif honeyHelpLoop then
-        task.cancel(honeyHelpLoop)
-        honeyHelpLoop = nil
+    elseif helpLoop then
+        task.cancel(helpLoop)
+        helpLoop = nil
     end
 end)
 
