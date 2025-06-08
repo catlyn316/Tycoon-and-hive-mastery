@@ -30,7 +30,7 @@ local Title = Instance.new("TextLabel", Frame)
 Title.Size = UDim2.new(1, -70, 0, 40)
 Title.Position = UDim2.new(0, 10, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.51"
+Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.52"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -401,7 +401,7 @@ helpBtn.MouseButton1Click:Connect(function()
                 local humanoid = character:WaitForChild("Humanoid", 10)
                 
                 if not humanoidRootPart or not humanoid then
-                    task.wait(1)
+                    task.wait(0.5)
                     continue
                 end
                 
@@ -416,7 +416,7 @@ helpBtn.MouseButton1Click:Connect(function()
                     local teleport1 = Workspace.Lobby:FindFirstChild("Teleport1")
                     if teleport1 and isHelpEnabled then
                         humanoidRootPart.CFrame = teleport1.CFrame
-                        task.wait(1) -- 增加等待時間讓傳送穩定
+                        task.wait(0.3) -- 增加等待時間讓傳送穩定
                     end
                     
                     -- 持續跟隨目標玩家
@@ -496,13 +496,13 @@ helpBtn.MouseButton1Click:Connect(function()
                             repeat
                                 task.wait(0.5)
                                 newCharacter = LocalPlayer.Character
-                                if tick() - waitStartTime > 15 then -- 15秒超時保護
+                                if tick() - waitStartTime > 5 then -- 5秒超時保護
                                     break
                                 end
                             until newCharacter and newCharacter:FindFirstChild("HumanoidRootPart") and 
                                   newCharacter:FindFirstChild("Humanoid") and newCharacter.Humanoid.Health > 0
                             
-                            task.wait(2) -- 額外等待確保完全載入
+                            task.wait(0.5) -- 額外等待確保完全載入
                         end
                     end
                 end)
@@ -587,19 +587,19 @@ honeyAttackBtn.MouseButton1Click:Connect(function()
 end)
 -- 蜂蜜功能2: 幫助他人 (和大亨一樣)
 honeyHelpBtn.MouseButton1Click:Connect(function()
-    isHelpEnabled = not isHelpEnabled
-    helpBtn.Text = isHelpEnabled and "開始幫助: 開" or "開始幫助: 關"
+    isHoneyHelpEnabled = not isHoneyHelpEnabled
+    honeyHelpBtn.Text = isHoneyHelpEnabled and "開始幫助: 開" or "開始幫助: 關"
     
-    if isHelpEnabled then
-        local targetName = helpInput.Text
+    if isHoneyHelpEnabled then
+        local targetName = honeyHelpInput.Text
         if targetName == "" then
-            helpBtn.Text = "開始幫助: 關"
-            isHelpEnabled = false
+            honeyHelpBtn.Text = "開始幫助: 關"
+            isHoneyHelpEnabled = false
             return
         end
         
-        helpLoop = task.spawn(function()
-            while isHelpEnabled do
+        honeyHelpLoop = task.spawn(function()
+            while isHoneyHelpEnabled do
                 -- 等待角色完全載入
                 local character = LocalPlayer.Character
                 if not character then
@@ -611,7 +611,7 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                 local humanoid = character:WaitForChild("Humanoid", 10)
                 
                 if not humanoidRootPart or not humanoid then
-                    task.wait(1)
+                    task.wait(0.5)
                     continue
                 end
                 
@@ -624,19 +624,19 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                 pcall(function() -- 用pcall包裝以防止錯誤導致腳本崩潰
                     -- 傳送到 Lobby.Teleport1
                     local teleport1 = Workspace.Lobby:FindFirstChild("Teleport1")
-                    if teleport1 and isHelpEnabled then
+                    if teleport1 and isHoneyHelpEnabled then
                         humanoidRootPart.CFrame = teleport1.CFrame
-                        task.wait(1) -- 增加等待時間讓傳送穩定
+                        task.wait(0.3) -- 增加等待時間讓傳送穩定
                     end
                     
                     -- 持續跟隨目標玩家
                     local targetPlayer = Players:FindFirstChild(targetName)
-                    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and isHelpEnabled then
+                    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and isHoneyHelpEnabled then
                         local playerWorkspaceFolder = Workspace:FindFirstChild(LocalPlayer.Name)
                         local lastUpdateTime = tick()
                         
                         -- 持續移動直到ragdoll狀態
-                        while isHelpEnabled and character.Parent and humanoid.Health > 0 and
+                        while isHoneyHelpEnabled and character.Parent and humanoid.Health > 0 and
                               playerWorkspaceFolder and 
                               not (playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value) do
                             
@@ -672,7 +672,7 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                         end
                         
                         -- 檢查ragdoll狀態
-                        if isHelpEnabled and playerWorkspaceFolder and 
+                        if isHoneyHelpEnabled and playerWorkspaceFolder and 
                            playerWorkspaceFolder:FindFirstChild("Ragdolled") and playerWorkspaceFolder.Ragdolled.Value then
                             
                             -- 安全傳送到指定坐標
@@ -682,7 +682,7 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                                 end
                             end)
                             
-                            task.wait(1) -- 等待傳送穩定
+                            task.wait(0.5) -- 等待傳送穩定
                             
                             -- 安全重置
                             pcall(function()
@@ -695,7 +695,7 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                             local resetStartTime = tick()
                             repeat
                                 task.wait(0.5)
-                                if tick() - resetStartTime > 15 then -- 15秒超時保護
+                                if tick() - resetStartTime > 5 then -- 5秒超時保護
                                     break
                                 end
                             until not LocalPlayer.Character or LocalPlayer.Character.Humanoid.Health <= 0
@@ -706,26 +706,26 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                             repeat
                                 task.wait(0.5)
                                 newCharacter = LocalPlayer.Character
-                                if tick() - waitStartTime > 15 then -- 15秒超時保護
+                                if tick() - waitStartTime > 5 then -- 5秒超時保護
                                     break
                                 end
                             until newCharacter and newCharacter:FindFirstChild("HumanoidRootPart") and 
                                   newCharacter:FindFirstChild("Humanoid") and newCharacter.Humanoid.Health > 0
                             
-                            task.wait(2) -- 額外等待確保完全載入
+                            task.wait(0.5) -- 額外等待確保完全載入
                         end
                     end
                 end)
                 
                 -- 如果出現問題，等待一段時間再重試
-                if isHelpEnabled then
+                if isHoneyHelpEnabled then
                     task.wait(1)
                 end
             end
         end)
-    elseif helpLoop then
-        task.cancel(helpLoop)
-        helpLoop = nil
+    elseif honeyHelpLoop then
+        task.cancel(honeyHelpLoop)
+        honeyHelpLoop = nil
     end
 end)
 
