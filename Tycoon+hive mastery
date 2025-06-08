@@ -30,7 +30,7 @@ local Title = Instance.new("TextLabel", Frame)
 Title.Size = UDim2.new(1, -70, 0, 40)
 Title.Position = UDim2.new(0, 10, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.52"
+Title.Text = "貓玲的大亨、蜂蜜精通(>^ω^<) v1.53"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -407,7 +407,7 @@ helpBtn.MouseButton1Click:Connect(function()
                 
                 -- 安全檢查：避免在載入過程中操作
                 if humanoid.Health <= 0 then
-                    task.wait(1)
+                    task.wait(0.3)
                     continue
                 end
                 
@@ -458,7 +458,7 @@ helpBtn.MouseButton1Click:Connect(function()
                                 end
                             end)
                             
-                            task.wait(0.2) -- 增加間隔時間減少負載
+                            task.wait(0.1) -- 增加間隔時間減少負載
                         end
                         
                         -- 檢查ragdoll狀態
@@ -472,7 +472,7 @@ helpBtn.MouseButton1Click:Connect(function()
                                 end
                             end)
                             
-                            task.wait(0.5) -- 等待傳送穩定
+                            task.wait(0.2) -- 等待傳送穩定
                             
                             -- 安全重置
                             pcall(function()
@@ -484,8 +484,8 @@ helpBtn.MouseButton1Click:Connect(function()
                             -- 等待重置完成和新角色載入
                             local resetStartTime = tick()
                             repeat
-                                task.wait(0.5)
-                                if tick() - resetStartTime > 5 then -- 5秒超時保護
+                                task.wait(0.2)
+                                if tick() - resetStartTime > 3 then -- 3秒超時保護
                                     break
                                 end
                             until not LocalPlayer.Character or LocalPlayer.Character.Humanoid.Health <= 0
@@ -494,15 +494,15 @@ helpBtn.MouseButton1Click:Connect(function()
                             local newCharacter = nil
                             local waitStartTime = tick()
                             repeat
-                                task.wait(0.5)
+                                task.wait(0.2)
                                 newCharacter = LocalPlayer.Character
-                                if tick() - waitStartTime > 5 then -- 5秒超時保護
+                                if tick() - waitStartTime > 3 then -- 3秒超時保護
                                     break
                                 end
                             until newCharacter and newCharacter:FindFirstChild("HumanoidRootPart") and 
                                   newCharacter:FindFirstChild("Humanoid") and newCharacter.Humanoid.Health > 0
                             
-                            task.wait(0.5) -- 額外等待確保完全載入
+                            task.wait(0.3) -- 額外等待確保完全載入
                         end
                     end
                 end)
@@ -611,13 +611,13 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                 local humanoid = character:WaitForChild("Humanoid", 10)
                 
                 if not humanoidRootPart or not humanoid then
-                    task.wait(0.5)
+                    task.wait(0.3)
                     continue
                 end
                 
                 -- 安全檢查：避免在載入過程中操作
                 if humanoid.Health <= 0 then
-                    task.wait(1)
+                    task.wait(0.5)
                     continue
                 end
                 
@@ -682,7 +682,7 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                                 end
                             end)
                             
-                            task.wait(0.5) -- 等待傳送穩定
+                            task.wait(0.3) -- 等待傳送穩定
                             
                             -- 安全重置
                             pcall(function()
@@ -694,8 +694,8 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                             -- 等待重置完成和新角色載入
                             local resetStartTime = tick()
                             repeat
-                                task.wait(0.5)
-                                if tick() - resetStartTime > 5 then -- 5秒超時保護
+                                task.wait(0.3)
+                                if tick() - resetStartTime > 3 then -- 3秒超時保護
                                     break
                                 end
                             until not LocalPlayer.Character or LocalPlayer.Character.Humanoid.Health <= 0
@@ -704,15 +704,15 @@ honeyHelpBtn.MouseButton1Click:Connect(function()
                             local newCharacter = nil
                             local waitStartTime = tick()
                             repeat
-                                task.wait(0.5)
+                                task.wait(0.3)
                                 newCharacter = LocalPlayer.Character
-                                if tick() - waitStartTime > 5 then -- 5秒超時保護
+                                if tick() - waitStartTime > 3 then -- 3秒超時保護
                                     break
                                 end
                             until newCharacter and newCharacter:FindFirstChild("HumanoidRootPart") and 
                                   newCharacter:FindFirstChild("Humanoid") and newCharacter.Humanoid.Health > 0
                             
-                            task.wait(0.5) -- 額外等待確保完全載入
+                            task.wait(0.3) -- 額外等待確保完全載入
                         end
                     end
                 end)
